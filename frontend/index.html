@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microservices PMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-light">
+
+    <nav id="navbar" class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top" style="display: none;">
+        <div class="container">
+            <a class="navbar-brand" href="#" onclick="showDashboard()"><i class="fas fa-project-diagram"></i> PMS App</a>
+            
+            <div class="d-flex text-white align-items-center">
+                <button id="admin-btn" class="btn btn-warning btn-sm me-3 text-dark fw-bold" style="display: none;" onclick="showAdminPanel()">
+                    <i class="fas fa-user-shield"></i> Admin Panel
+                </button>
+                
+                <span class="me-3"><i class="fas fa-user-circle"></i> <span id="user-display">User</span></span>
+                <button class="btn btn-outline-light btn-sm" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        
+        <div id="auth-section" class="row justify-content-center">
+            
+            <div class="col-md-5 col-lg-4" id="login-card">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-primary text-white text-center py-3">
+                        <h4 class="mb-0"><i class="fas fa-sign-in-alt"></i> Login</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" id="login-username" class="form-control" placeholder="Enter username">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" id="login-password" class="form-control" placeholder="Enter password">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" onclick="login()">Sign In</button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="toggleAuthMode()">No account? Sign Up</button>
+                        </div>
+                        <p id="login-error" class="text-danger text-center mt-3 small fw-bold"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5 col-lg-4" id="register-card" style="display: none;">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-success text-white text-center py-3">
+                        <h4 class="mb-0"><i class="fas fa-user-plus"></i> Sign Up</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row mb-2">
+                            <div class="col">
+                                <input type="text" id="reg-firstname" class="form-control form-control-sm" placeholder="First Name">
+                            </div>
+                            <div class="col">
+                                <input type="text" id="reg-lastname" class="form-control form-control-sm" placeholder="Last Name">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" id="reg-username" class="form-control form-control-sm" placeholder="Choose Username">
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" id="reg-email" class="form-control form-control-sm" placeholder="Email Address">
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" id="reg-password" class="form-control form-control-sm" placeholder="Password">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success" onclick="register()">Create Account</button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="toggleAuthMode()">Back to Login</button>
+                        </div>
+                        <p id="reg-message" class="text-center mt-3 small fw-bold"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-section" style="display: none;">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-users-cog"></i> User Management</h4>
+                    <button class="btn btn-sm btn-outline-light" onclick="showDashboard()"><i class="fas fa-times"></i> Close</button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3">User</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboard-section" style="display: none;">
+            <div class="row">
+                
+                <div class="col-md-4 mb-4">
+                    
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-header bg-white border-bottom-0 pt-3">
+                            <h5 class="mb-0 text-dark"><i class="fas fa-briefcase"></i> My Work</h5>
+                        </div>
+                        <div class="list-group list-group-flush pb-2">
+                            <a href="#" class="list-group-item list-group-item-action fw-bold text-primary border-0" onclick="loadMyTasks()">
+                                <i class="fas fa-user-check me-2"></i> My Assigned Tasks
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center bg-white border-bottom-0 pt-3">
+                            <h5 class="mb-0 text-primary"><i class="fas fa-users"></i> My Teams</h5>
+                            <button class="btn btn-sm btn-outline-primary rounded-circle" onclick="createTeamPrompt()" title="Create New Team">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush" id="teams-list">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom-0 pt-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 text-dark" id="task-header"><i class="fas fa-tasks"></i> Tasks</h5>
+                                <button id="add-task-btn" class="btn btn-sm btn-primary" onclick="createTaskPrompt()" disabled>
+                                    <i class="fas fa-plus"></i> New Task
+                                </button>
+                            </div>
+                            
+                            <div id="team-info-bar" class="mt-2 text-muted small border-top pt-2" style="display:none;">
+                                <i class="fas fa-user-friends"></i> Members IDs: <span id="team-members-display" class="fw-bold"></span>
+                                <a href="#" class="ms-2 text-primary text-decoration-none" onclick="addMemberPrompt()">
+                                    <i class="fas fa-user-plus"></i> Add Member
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body bg-light" id="tasks-container" style="min-height: 400px; max-height: 80vh; overflow-y: auto;">
+                            <div class="text-center text-muted mt-5">
+                                <i class="fas fa-arrow-left fa-2x mb-2"></i>
+                                <p>Select "My Assigned Tasks" or a Team from the left to start.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="createTaskModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-plus-circle"></i> Create New Task</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Title</label>
+                        <input type="text" id="new-task-title" class="form-control" placeholder="e.g. Fix Login Bug">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea id="new-task-desc" class="form-control" rows="3" placeholder="Task details..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" id="new-task-due" class="form-control">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Priority</label>
+                            <select id="new-task-priority" class="form-select">
+                                <option value="LOW">Low</option>
+                                <option value="MEDIUM" selected>Medium</option>
+                                <option value="HIGH">High</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Assign to (Username)</label>
+                            <input type="text" id="new-task-assignee" class="form-control" placeholder="Enter Username (optional)">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitNewTask()">Create Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="taskModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="modal-task-title">Task Title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <h6 class="fw-bold text-muted text-uppercase small">Description</h6>
+                            <p id="modal-task-desc" class="text-dark">No description.</p>
+                        </div>
+                        <div class="col-md-4 border-start bg-light p-3 rounded">
+                            <ul class="list-unstyled small mb-0">
+                                <li class="mb-2"><strong>Status:</strong> <span id="modal-task-status" class="badge bg-secondary">TODO</span></li>
+                                <li class="mb-2"><strong>Priority:</strong> <span id="modal-task-priority">MEDIUM</span></li>
+                                <li class="mb-2"><strong>Due Date:</strong> <span id="modal-task-due">-</span></li>
+                                <li class="mb-2"><strong>Assigned To (ID):</strong> <span id="modal-task-assigned">-</span></li>
+                            </ul>
+                            
+                            <hr>
+                            <h6 class="fw-bold text-muted small">Change Status:</h6>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-sm btn-outline-warning text-dark" onclick="modalUpdateStatus('IN_PROGRESS')">In Progress</button>
+                                <button class="btn btn-sm btn-outline-success" onclick="modalUpdateStatus('DONE')">Done</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h6 class="fw-bold"><i class="far fa-comments"></i> Comments</h6>
+                    <div id="modal-comments-list" class="bg-light p-3 rounded mb-3 border" style="max-height: 250px; overflow-y: auto;">
+                        </div>
+                    
+                    <div class="input-group">
+                        <input type="text" id="modal-new-comment" class="form-control" placeholder="Write a comment...">
+                        <button class="btn btn-primary" onclick="modalAddComment()">Post</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
